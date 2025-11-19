@@ -3,11 +3,40 @@ trigger: none
 pool: todo-agent
 
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: build
+    jobs:
+      - job: bild
+        steps:
+        - task: NodeTool@0
+          displayName: node.18 install
+          inputs:
+            versionSource: 'spec'
+            versionSpec: '18.x'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+        - task: Npm@1
+          displayName: run install(node module)
+          inputs:
+            command: 'install'
+            workingDir: '$(System.DefaultWorkingDirectory)'
+           
+        - task: Npm@1
+          displayName: run build
+          inputs:
+            command: 'custom'
+            customCommand: 'run build'
+        
+        - task: PublishBuildArtifacts@1
+          inputs:
+            PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
+            ArtifactName: 'ReactTodoUIMonolith-artifacts'
+            publishLocation: 'Container'
+            MaxArtifactSize: 500000
+
+stages:
+  - stage: release
+    displayName: release(deploy)
+    jobs:
+      - job: deploy
+        steps:
+        
