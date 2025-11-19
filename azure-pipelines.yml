@@ -2,7 +2,6 @@ trigger: none
 
 pool: todo-agent
 
-
 stages:
   - stage: build
     jobs:
@@ -27,16 +26,41 @@ stages:
             customCommand: 'run build'
         
         - task: PublishBuildArtifacts@1
+          displayName: publish
           inputs:
             PathtoPublish: '$(System.DefaultWorkingDirectory)/build'
             ArtifactName: 'ReactTodoUIMonolith-artifacts'
             publishLocation: 'Container'
             MaxArtifactSize: 500000
 
-stages:
+
   - stage: release
     displayName: release(deploy)
     jobs:
       - job: deploy
         steps:
+        - task: DownloadBuildArtifacts@1
+          displayName: download artifacts
+          inputs:
+            buildType: 'current'
+            downloadType: 'single'
+            artifactName: 'ReactTodoUIMonolith-artifacts'
+            downloadPath: '$(System.ArtifactsDirectory)'
+            cleanDestinationFolder: true
         
+        - task: CopyFilesOverSSH@0
+          displayName: copy artifacts
+          inputs:
+            sshEndpoint: 'todo-svc'
+            sourceFolder: '$(System.ArtifactsDirectory)'
+            contents: '**'
+            targetFolder: '/home/satya'
+            readyTimeout: '20000'
+
+        - task: SSH@0
+          displayName: copy artifacts on nginx
+          inputs:
+            sshEndpoint: 'todo-svc'
+            runOptions: 'commands'
+            commands: 'sudo cp -r /home/satya/* /var/www/html'
+            readyTimeout: '20000'
