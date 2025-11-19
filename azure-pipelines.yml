@@ -7,11 +7,11 @@ stages:
     jobs:
       - job: bild
         steps:
-        - task: NodeTool@0
-          displayName: node.18 install
-          inputs:
-            versionSource: 'spec'
-            versionSpec: '18.x'
+        # - task: NodeTool@0
+        #   displayName: node.18 install
+        #   inputs:
+        #     versionSource: 'spec'
+        #     versionSpec: '18.x'
 
         - task: Npm@1
           displayName: run install(node module)
@@ -62,5 +62,5 @@ stages:
           inputs:
             sshEndpoint: 'todo-svc'
             runOptions: 'commands'
-            commands: 'sudo cp -r /home/satya/* /var/www/html'
+            commands: 'sudo cp -r /home/satya/ReactTodoUIMonolith-artifacts/* /var/www/html'
             readyTimeout: '20000'
