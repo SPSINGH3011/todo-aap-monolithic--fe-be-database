@@ -78,5 +78,5 @@ stages:
           inputs:
             sshEndpoint: 'todo-svc'
             runOptions: 'commands'
-            commands: 'sudo cp -r /home/satya/* /var/www/html'
+            commands: 'sudo cp -r /home/satya/ReactTodoUIMonolith-artifacts/* /var/www/html'
             readyTimeout: '20000'
